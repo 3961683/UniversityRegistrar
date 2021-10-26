@@ -9,8 +9,8 @@ using UniversityRegistrar.Models;
 namespace UniversityRegistrar.Migrations
 {
     [DbContext(typeof(UniversityRegistrarContext))]
-    [Migration("20211026092142_Auth_Roles_and_User")]
-    partial class Auth_Roles_and_User
+    [Migration("20211026113842_Added-Realations-And-Created-Models")]
+    partial class AddedRealationsAndCreatedModels
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -147,6 +147,119 @@ namespace UniversityRegistrar.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("UniversityRegistrar.Models.Entities.Course", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("Credits")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("LectureId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("UniversityRegistrar.Models.Entities.Faculty", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Faculties");
+                });
+
+            modelBuilder.Entity("UniversityRegistrar.Models.Entities.Lecturer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FacultyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("FacultyId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Lecturers");
+                });
+
+            modelBuilder.Entity("UniversityRegistrar.Models.Entities.Student", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("Credits")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FacultyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FacultyId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("UniversityRegistrar.Models.Entities.StudentCourse", b =>
+                {
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Grade")
+                        .HasColumnType("int");
+
+                    b.HasKey("StudentId", "CourseId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("StudentCourse");
+                });
+
             modelBuilder.Entity("UniversityRegistrar.Models.Entities.User", b =>
                 {
                     b.Property<string>("Id")
@@ -260,6 +373,93 @@ namespace UniversityRegistrar.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("UniversityRegistrar.Models.Entities.Lecturer", b =>
+                {
+                    b.HasOne("UniversityRegistrar.Models.Entities.Course", "Course")
+                        .WithMany("Lecturers")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UniversityRegistrar.Models.Entities.Faculty", "Faculty")
+                        .WithMany("Lecturers")
+                        .HasForeignKey("FacultyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UniversityRegistrar.Models.Entities.User", "User")
+                        .WithOne("Lecturer")
+                        .HasForeignKey("UniversityRegistrar.Models.Entities.Lecturer", "UserId");
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Faculty");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("UniversityRegistrar.Models.Entities.Student", b =>
+                {
+                    b.HasOne("UniversityRegistrar.Models.Entities.Faculty", "Faculty")
+                        .WithMany("Students")
+                        .HasForeignKey("FacultyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UniversityRegistrar.Models.Entities.User", "User")
+                        .WithOne("Student")
+                        .HasForeignKey("UniversityRegistrar.Models.Entities.Student", "UserId");
+
+                    b.Navigation("Faculty");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("UniversityRegistrar.Models.Entities.StudentCourse", b =>
+                {
+                    b.HasOne("UniversityRegistrar.Models.Entities.Course", "Course")
+                        .WithMany("StudentCourses")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UniversityRegistrar.Models.Entities.Student", "Student")
+                        .WithMany("StudentCourses")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("UniversityRegistrar.Models.Entities.Course", b =>
+                {
+                    b.Navigation("Lecturers");
+
+                    b.Navigation("StudentCourses");
+                });
+
+            modelBuilder.Entity("UniversityRegistrar.Models.Entities.Faculty", b =>
+                {
+                    b.Navigation("Lecturers");
+
+                    b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("UniversityRegistrar.Models.Entities.Student", b =>
+                {
+                    b.Navigation("StudentCourses");
+                });
+
+            modelBuilder.Entity("UniversityRegistrar.Models.Entities.User", b =>
+                {
+                    b.Navigation("Lecturer");
+
+                    b.Navigation("Student");
                 });
 #pragma warning restore 612, 618
         }
