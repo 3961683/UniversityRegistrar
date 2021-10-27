@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace UniversityRegistrar.Models.Entities
 {
@@ -11,8 +8,12 @@ namespace UniversityRegistrar.Models.Entities
         public int FacultyId { get; set; }
         public string UserId { get; set; }
         public int CourseId { get; set; }
-        public Course Course { get; set; }
-        public User User { get; set; }
-        public Faculty Faculty { get; set; }
+
+        [JsonIgnore]
+        public virtual Course Course { get; set; }
+        [JsonIgnore]
+        public virtual User User { get; set; }
+        [JsonIgnore]
+        public virtual Faculty Faculty { get; set; }
     }
 }

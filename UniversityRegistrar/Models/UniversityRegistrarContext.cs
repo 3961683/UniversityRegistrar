@@ -18,6 +18,7 @@ namespace UniversityRegistrar.Models
         public DbSet<Faculty> Faculties { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Lecturer> Lecturers { get; set; }
+        public DbSet<StudentCourse> StudentCourses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

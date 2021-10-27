@@ -30,7 +30,7 @@ namespace UniversityRegistrar.Controllers.v1
 
         [EnableCors()]
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(string id)
+        public async Task<ActionResult> GetById(string id)
         {
             return Ok(await Task.Run(() => _context.Users.FirstOrDefault(u => u.Id == id)));
         }
