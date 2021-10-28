@@ -117,8 +117,10 @@ namespace UniversityRegistrar.Controllers.v1
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-            if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Student))
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Student));
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Lecturer))
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Lecturer));
 
             if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
             {
