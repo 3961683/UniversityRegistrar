@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Text.Json.Serialization;
 
 namespace UniversityRegistrar.Models.Entities
 {
     public class User: IdentityUser
     {
-        public Student Student { get; set; }
-        public Lecturer Lecturer { get; set; }
+        [JsonIgnore]
+        public virtual Student Student { get; set; }
+        [JsonIgnore]
+        public virtual Lecturer Lecturer { get; set; }
     }
 }
