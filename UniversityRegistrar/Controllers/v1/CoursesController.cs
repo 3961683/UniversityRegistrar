@@ -26,11 +26,11 @@ public class CoursesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> Get()
     {
-        var to_delete = _context.Courses.Where(x => x.EndDate < new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second));
+/*        var to_delete = _context.Courses.Where(x => x.EndDate < new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second));
        
         _context.Courses.Remove(_context.Courses.Find(to_delete.Select(x => x.Id)));
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();*/
 
         return Ok(await _context.Courses.ToListAsync());
     }
