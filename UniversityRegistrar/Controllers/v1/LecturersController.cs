@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using UniversityRegistrar.Models;
+using UniversityRegistrar.Models.Authentication;
 using UniversityRegistrar.Models.Entities;
 
 namespace UniversityRegistrar.Controllers.v1
@@ -37,7 +38,7 @@ namespace UniversityRegistrar.Controllers.v1
         }
 
         [HttpPost]
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Post([FromBody] Lecturer model)
         {
             if (model == null)
@@ -50,7 +51,7 @@ namespace UniversityRegistrar.Controllers.v1
         }
 
         [HttpPut]
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Put([FromBody] Lecturer model)
         {
             if (model == null)
@@ -65,7 +66,7 @@ namespace UniversityRegistrar.Controllers.v1
 
         [HttpDelete]
         [Route("{id}")]
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             Lecturer lecturer = await _context.Lecturers.FindAsync(id);

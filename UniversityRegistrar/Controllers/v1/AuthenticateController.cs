@@ -8,16 +8,18 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using UniversityRegistrar.Utilities;
+using System.IO;
 
 namespace UniversityRegistrar.Controllers.v1
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = UserRoles.Admin)]
     public class AuthenticateController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
@@ -34,6 +36,7 @@ namespace UniversityRegistrar.Controllers.v1
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult> Login([FromBody] LoginModel model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);
@@ -92,8 +95,11 @@ namespace UniversityRegistrar.Controllers.v1
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
 
-            // sending notification through email          
-            /*SendEmail(user);*/
+            // sending notification through email //
+
+            //SendRegisterNotification(user, model.Password);
+
+            //------------------------------------//
 
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
@@ -130,44 +136,14 @@ namespace UniversityRegistrar.Controllers.v1
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
 
-        private static void SendEmail(User user)
+        private static void SendRegisterNotification(User user, string password)
         {
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-              .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-              .AddJsonFile("appsettings.json")
-              .Build();
-
-            var senderEmail = new MailAddress(configuration.GetSection("Smtp")["Email"], "Org");
-            var EmailReceiver = new MailAddress(user.Email, "Пользователь");
-
-            string _password = configuration.GetSection("Smtp")["Password"];
-            string _sub = "Создание пользователя";
-            string _body = string.Format($"<h1>Доброго времени суток, {user.Email}!</h1><br><hr>" +
-                "<p> Ваша учетная запись успешно создана! </p>" +
+            EmailComposer.Send(user.Email, "Вы были зарегистрированы",
+                string.Format($"<h1>Доброго времени суток!</h1><br><hr>" +
+                "<p> Ваша учетная запись для доступа к UniversityRegistrar успешно создана! </p>" +
                 $"<p> Ваш логин: <h1>{user.UserName} </h1></p>" +
-                "<p> С уважением, Ваша организация! </p>");
-
-            var smtp = new SmtpClient
-            {
-                Host = configuration.GetSection("Smtp")["Host"],
-                Port = int.Parse(configuration.GetSection("Smtp")["Port"]),
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(senderEmail.Address, _password)
-            };
-
-            using (var message = new MailMessage(senderEmail, EmailReceiver))
-            {
-                message.Subject = _sub;
-                message.Body = _body;
-                message.IsBodyHtml = true;
-                ServicePointManager.ServerCertificateValidationCallback += (s, cert, chain, sslPolicyErrors) => true;
-                smtp.Send(message);
-            }
-
-            smtp.Dispose();
+                $"<p> Ваш пароль: <h1>{password} </h1></p>" +
+                "<p> С уважением, Ваша организация! </p>"));
         }
-
     }
 }
