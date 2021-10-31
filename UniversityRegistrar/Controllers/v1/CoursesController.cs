@@ -7,84 +7,88 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using UniversityRegistrar.Models;
+using UniversityRegistrar.Models.Authentication;
 using UniversityRegistrar.Models.Entities;
 
 namespace UniversityRegistrar.Controllers.v1
 {
-[Route("api/[controller]")]
-[Authorize]
-[EnableCors]
-public class CoursesController : ControllerBase
-{
-    private readonly UniversityRegistrarContext _context;
-
-    public CoursesController(UniversityRegistrarContext context)
+    [Route("api/[controller]")]
+    [Authorize]
+    [EnableCors]
+    public class CoursesController : ControllerBase
     {
-        this._context = context;
-    }
+        private readonly UniversityRegistrarContext _context;
 
-    [HttpGet]
-    public async Task<ActionResult> Get()
-    {
-/*        var to_delete = _context.Courses.Where(x => x.EndDate < new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second));
-       
-        _context.Courses.Remove(_context.Courses.Find(to_delete.Select(x => x.Id)));
+        public CoursesController(UniversityRegistrarContext context)
+        {
+            _context = context;
+        }
 
-        await _context.SaveChangesAsync();*/
+        [HttpGet]
+        [Route("all")]
+        public async Task<ActionResult> Get()
+        {
+            return Ok(await _context.Courses.ToListAsync());
+        }
 
-        return Ok(await _context.Courses.ToListAsync());
-    }
+        [HttpGet]
+        public async Task<ActionResult> GetAvilableCourses()
+        {
+            var courses = await _context.Courses.ToListAsync();
 
-    [HttpGet]
-    [Route("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        return Ok(await _context.Courses.FindAsync(id));
-    }
+            return Ok(courses.Where(x => x.EndDate > new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second)));
+        }
 
-    [HttpPost]
-    //[Authorize(Roles = "admin")]
-    public async Task<IActionResult> Post([FromBody] Course model)
-    {
-        if (model == null)
-            return BadRequest(new { errorText = "Invalid input data!" });
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            return Ok(await _context.Courses.FindAsync(id));
+        }
 
-        if (model.EndDate < new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second))
-            return BadRequest(new { errorText = "End time less than now." });
+        [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<IActionResult> Post([FromBody] Course model)
+        {
+            if (model == null)
+                return BadRequest(new { errorText = "Invalid input data!" });
 
-        await _context.Courses.AddAsync(model);
-        await _context.SaveChangesAsync();
+            if (model.EndDate < new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second))
+                return BadRequest(new { errorText = "End time less than now." });
 
-        return Ok();
-    }
+            await _context.Courses.AddAsync(model);
+            await _context.SaveChangesAsync();
 
-    [HttpPut]
-    //[Authorize(Roles = "admin")]
-    public async Task<IActionResult> Put([FromBody] Course model)
-    {
-        if (model == null)
-            return BadRequest(new { errorText = "Invalid input data!" });
+            return Ok();
+        }
 
-        if (model.EndDate < new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second))
-            return BadRequest(new { errorText = "End time less than now." });
+        [HttpPut]
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<IActionResult> Put([FromBody] Course model)
+        {
+            if (model == null)
+                return BadRequest(new { errorText = "Invalid input data!" });
 
-        _context.Update(model);
+            if (model.EndDate < new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second))
+                return BadRequest(new { errorText = "End time less than now." });
 
-        await _context.SaveChangesAsync();
+            _context.Update(model);
 
-        return Ok(model);
-    }
+            await _context.SaveChangesAsync();
 
-    [HttpDelete]
-    [Route("{id}")]
-    //[Authorize(Roles = "admin")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        _context.Courses.Remove(_context.Courses.Find(id));
+            return Ok(model);
+        }
 
-        await _context.SaveChangesAsync();
+        [HttpDelete]
+        [Route("{id}")]
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            _context.Courses.Remove(_context.Courses.Find(id));
 
-        return NoContent();
-    }
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }

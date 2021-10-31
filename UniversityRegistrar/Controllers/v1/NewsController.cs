@@ -10,11 +10,13 @@ using System.Net.Mail;
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
 using System;
+using UniversityRegistrar.Models.Authentication;
 
 namespace UniversityRegistrar.Controllers.v1
 {
 
     [Route("api/[controller]")]
+    [Authorize(Roles = UserRoles.Admin)]
     [ApiController]
     public class NewsController : ControllerBase
     {
@@ -26,8 +28,9 @@ namespace UniversityRegistrar.Controllers.v1
             this._context = context;
         }
 
-        [EnableCors()]
         [HttpGet]
+        [AllowAnonymous]
+        [EnableCors()]
         public async Task<ActionResult> Get()
         {
             return Ok(await Task.Run(() => _context.News));

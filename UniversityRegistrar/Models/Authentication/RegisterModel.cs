@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using UniversityRegistrar.Utilities;
 
 namespace UniversityRegistrar.Models.Authentication
 {
@@ -16,6 +17,6 @@ namespace UniversityRegistrar.Models.Authentication
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
-        public string Password { get; set; }
+        public string Password { get; set; } = PasswordGenerator.GenerateRandomPassword();
     }
 }
