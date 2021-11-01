@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UniversityRegistrar.Models;
+using UniversityRegistrar.Models.Authentication;
 using UniversityRegistrar.Models.Entities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -12,6 +12,7 @@ using UniversityRegistrar.Models.Entities;
 namespace UniversityRegistrar.Controllers.v1
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class StudentCoursesController : ControllerBase
     {
@@ -70,6 +71,7 @@ namespace UniversityRegistrar.Controllers.v1
         }
 
         [EnableCors()]
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
