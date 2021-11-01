@@ -54,7 +54,6 @@ namespace UniversityRegistrar.Controllers.v1
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] News news)
         {
-            if (news == null) { return Ok("Wrong input!"); }
 
             _context.News.Add(news);
             await _context.SaveChangesAsync();
