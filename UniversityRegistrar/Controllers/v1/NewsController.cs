@@ -16,7 +16,7 @@ namespace UniversityRegistrar.Controllers.v1
 {
 
     [Route("api/[controller]")]
-    [Authorize(Roles = UserRoles.Admin)]
+    //[Authorize(Roles = UserRoles.Admin)]
     [ApiController]
     public class NewsController : ControllerBase
     {

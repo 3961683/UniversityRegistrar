@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace UniversityRegistrar.Controllers.v1
 {
-    [Authorize(Roles = UserRoles.Admin)]
+    //[Authorize(Roles = UserRoles.Admin)]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase

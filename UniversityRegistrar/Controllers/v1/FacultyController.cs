@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -13,13 +13,13 @@ using UniversityRegistrar.Models.Entities;
 namespace UniversityRegistrar.Controllers.v1
 {
     [Route("api/[controller]")]
-   // [Authorize]
+    // [Authorize]
     [EnableCors]
-    public class StudentsController : ControllerBase
+    public class FacultyController : ControllerBase
     {
         private readonly UniversityRegistrarContext _context;
 
-        public StudentsController(UniversityRegistrarContext context)
+        public FacultyController(UniversityRegistrarContext context)
         {
             this._context = context;
         }
@@ -27,24 +27,24 @@ namespace UniversityRegistrar.Controllers.v1
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            return Ok(await _context.Students.ToListAsync());
+            return Ok(await _context.Faculties.ToListAsync());
         }
 
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            return Ok(await _context.Students.FindAsync(id));
+            return Ok(await _context.Faculties.FindAsync(id));
         }
 
         [HttpPost]
         //[Authorize(Roles = UserRoles.Admin)]
-        public async Task<IActionResult> Post([FromBody] Student model)
+        public async Task<IActionResult> Post([FromBody] Faculty model)
         {
             if (model == null)
                 return BadRequest(new { errorText = "Invalid input data!" });
 
-            await _context.Students.AddAsync(model);
+            await _context.Faculties.AddAsync(model);
             await _context.SaveChangesAsync();
 
             return Ok();
@@ -52,7 +52,7 @@ namespace UniversityRegistrar.Controllers.v1
 
         [HttpPut]
         //[Authorize(Roles = UserRoles.Admin + "," + UserRoles.Lecturer)]
-        public async Task<IActionResult> Put([FromBody] Student model)
+        public async Task<IActionResult> Put([FromBody] Faculty model)
         {
             if (model == null)
                 return BadRequest(new { errorText = "Invalid input data!" });
@@ -69,14 +69,14 @@ namespace UniversityRegistrar.Controllers.v1
         //[Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
-            Student student = await _context.Students.FindAsync(id);
+            Faculty faculty = await _context.Faculties.FindAsync(id);
 
-            if (student != null)
+            if (faculty != null)
             {
-                _context.Students.Remove(student);
+                _context.Faculties.Remove(faculty);
                 return Ok(await _context.SaveChangesAsync());
             }
-            return NotFound(new { error = $"No student with id: {id}" });
+            return NotFound(new { error = $"No Faculty with id: {id}" });
         }
     }
 }

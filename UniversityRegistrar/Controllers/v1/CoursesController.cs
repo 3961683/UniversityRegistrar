@@ -13,7 +13,7 @@ using UniversityRegistrar.Models.Entities;
 namespace UniversityRegistrar.Controllers.v1
 {
     [Route("api/[controller]")]
-    [Authorize]
+   // [Authorize]
     [EnableCors]
     public class CoursesController : ControllerBase
     {
@@ -47,14 +47,17 @@ namespace UniversityRegistrar.Controllers.v1
         }
 
         [HttpPost]
-        [Authorize(Roles = UserRoles.Admin)]
+        //[Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Post([FromBody] Course model)
         {
             if (model == null)
                 return BadRequest(new { errorText = "Invalid input data!" });
 
-            if (model.EndDate < new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second))
+            if (model.EndDate < model.StartDate)
                 return BadRequest(new { errorText = "End time less than now." });
+
+            if (model.StartDate < DateTime.Now)
+                return BadRequest(new { errorText = "Start time less than now." });
 
             await _context.Courses.AddAsync(model);
             await _context.SaveChangesAsync();
@@ -63,13 +66,23 @@ namespace UniversityRegistrar.Controllers.v1
         }
 
         [HttpPut]
-        [Authorize(Roles = UserRoles.Admin)]
-        public async Task<IActionResult> Put([FromBody] Course model)
+       // [Authorize(Roles = UserRoles.Admin)]
+        public async Task<IActionResult> Put(int id,[FromBody] Course model)
         {
+            Course obj = _context.Courses.Find(id);
+
+            if(obj == null)
+            {
+                return BadRequest(new { errorText = "Course not found" });
+            }
+
             if (model == null)
                 return BadRequest(new { errorText = "Invalid input data!" });
 
-            if (model.EndDate < new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second))
+            if (model.StartDate < DateTime.Now)
+                return BadRequest(new { errorText = "End time less than now." });
+
+            if (model.EndDate < model.StartDate)
                 return BadRequest(new { errorText = "End time less than now." });
 
             _context.Update(model);
@@ -81,7 +94,7 @@ namespace UniversityRegistrar.Controllers.v1
 
         [HttpDelete]
         [Route("{id}")]
-        [Authorize(Roles = UserRoles.Admin)]
+        //[Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             _context.Courses.Remove(_context.Courses.Find(id));

@@ -12,7 +12,7 @@ using UniversityRegistrar.Models.Entities;
 namespace UniversityRegistrar.Controllers.v1
 {
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
     public class StudentCoursesController : ControllerBase
     {
@@ -71,7 +71,7 @@ namespace UniversityRegistrar.Controllers.v1
         }
 
         [EnableCors()]
-        [Authorize(Roles = UserRoles.Admin)]
+        //[Authorize(Roles = UserRoles.Admin)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

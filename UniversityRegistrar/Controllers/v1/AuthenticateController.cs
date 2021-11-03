@@ -20,6 +20,7 @@ namespace UniversityRegistrar.Controllers.v1
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = UserRoles.Admin)]
+
     public class AuthenticateController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
@@ -74,6 +75,7 @@ namespace UniversityRegistrar.Controllers.v1
             return Unauthorized();
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
